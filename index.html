@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Виселица</title>
 </head>
 <body>
-    <h1 id="heading" style="text-align: center;">Press key "Up" to play. For Restart press F5</h1>
+    <h1 id="heading" style="text-align: center;">Для того чтобы начать и продолжать игру кликните по экрану. Для рестарта игры перезагрузите страницу.</h1>
     <canvas id="canvas" width="500" height="500" style="display: block; margin: 0 auto;"></canvas>
     <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
     <script>
@@ -30,10 +30,11 @@
             var words = [
                 "программа",
                 "макака",
-                "прекрасный",
+                "вишня",
                 "оладушек",
-                "какашка",
-                "русский"
+                "пчела",
+                "солнце",
+                "небо"
                 ];
             return words[Math.floor(Math.random() * words.length)];
        }
@@ -51,7 +52,7 @@
        }
 
        function getGuess () {
-            return prompt("Input a letter or press Cancel to Close the game.");
+            return prompt("Введи одну русскую букву и нажми ОК. Или же нажми Отмена чтобы закончить игру.");
        }
        
        function updateGameState (guess, word, answerArray) {
@@ -66,7 +67,7 @@
        }
 
        function showAnswerAndCongratulatePlayer (answerArray) {
-           return alert("Congratulations the word was: " + word);
+           return alert("Поздравляю таинственное слово: " + word);
        }
 
        var word = pickWord();
@@ -159,20 +160,18 @@
             };
        };
 
-       var hangman = function (key) {
-            if (key == 38) {
-                    if ((remainingLetters > 0) && (attempts > 0)) {
+      $("body").click(function () {
+        if ((remainingLetters > 0) && (attempts > 0)) {
                             drawLines(word.length);
-                            showPlayerProgress(answerArray);
                             var guess = getGuess();
-                            if (guess === null) {
-                                alert("You dont put anything!");
-                            } else if (guess.length !== 1) {
-                                alert("Plese input just 1 letter!"); 
+                            if ((guess === null)||(guess == 0)) {
+                                alert("Ты ничего не ввёл!");
+                            } else if (guess.length > 1) {
+                                alert("Пожалуйста только по 1 букве!"); 
                             } else {
                                 
                                 if (findrepeatLetters(guess.toLowerCase())) {
-                                    alert("You already input this letter! Try another letter.");
+                                    alert("Ты уже пробовал эту букву.");
                                     repeatLetters = 0;
                                 } else {
                                     inputLetters.push(guess.toLowerCase());
@@ -180,35 +179,31 @@
                                     var correctGuesses = updateGameState(guess, word, answerArray);
             
                                     if (correctGuesses == 0) {
+                                        alert("Эх не правильно (");
                                         attempts--;
                                         drawingHangman(attempts);
                                         drawingWrongLetters(guess);
+                                        alert("Осталось попыток: " + attempts);
                                     } else {
-                                        alert("Correct guesses: " + correctGuesses);
+                                        alert("Молодец! Угадано букв за этот раз: " + correctGuesses);
                                         remainingLetters -= correctGuesses;
                                     };
                                     drawText();
-                                    alert("Attempts: " + attempts);
 
                                     if (remainingLetters == 0) {
                                         showAnswerAndCongratulatePlayer(answerArray);
                                     } else if ((attempts == 0) || (guess == null)){
-                                        alert("You lose the game! The word was: " + word)
+                                        alert("Ой кажется попытки кончились, таинственное слово: " + word)
                                     };
                                 }; 
                             };
                 };
-            };
-       };
+      });
 
        setInterval(function() {
             $("#heading").fadeTo(1000, 0);
             $("#heading").fadeTo(1000, 1);
        }, 2000);
-
-       $("body").keydown(function (event) {
-            hangman(event.keyCode);
-        });
     </script>
 </body>
 </html>
