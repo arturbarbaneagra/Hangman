@@ -1,101 +1,214 @@
 <!DOCTYPE html>
-<html class="page" lang="eng">
+<html lang="en">
 <head>
- <meta charset="UTF-8">
- <title>Интерактивное программирование</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
- <h1 id="heading">Привет, мир!</h1>
- <script src="https://code.jquery.com/jquery-2.1.0.js">
- </script>
- <script>
-    /*
-    var leftOffset = 0;
-    var moveHeading = function () {
-    $("#heading").offset({ left: leftOffset });
-    leftOffset++;
-    if (leftOffset > 200) {
-        leftOffset = 0;
-    }
-    };
-    setInterval(moveHeading, 15);
-    */
-    /*
-    var clickHandler = function (event) {
-    console.log("Клик! " + event.pageX + " " + event.pageY);
-    };
-    $("h1").click(clickHandler);
-    */ 
-   /*
-    $("html").mousemove(function (event) {
-        $("#heading").offset({
-            left: event.pageX,
-            top: event.pageY
-        });
-    });
-    */
-   /*
-    $("html").click(function (event) {
-        $("#heading").offset({
-            left: event.pageX,
-            top: event.pageY
-        });
-    });
-    */
-    var leftOffset = 0;
-    var topOffset = 0;
-    var rightOffset = 200;
-    var bottomOffset = 200;
-    var moveHeading = function () {
-    $("#heading").offset({ left: leftOffset });
-        if (leftOffset < 200) {
-            leftOffset++;
-        } else {
-            $("#heading").offset({ top: topOffset });
-            if (topOffset < 200) {
-                topOffset++;
+    <h1 id="heading" style="text-align: center;">Press key "Up" to play. For Restart press F5</h1>
+    <canvas id="canvas" width="500" height="500" style="display: block; margin: 0 auto;"></canvas>
+    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+    <script>
+        /*
+        function areArraysSame (array1, array2) {
+            if (array1.length != array2.length) {
+                return false;
             } else {
-                $("#heading").offset({ left: rightOffset });
-                if (rightOffset > 0) {
-                    rightOffset--;
-                } else {
-                    $("#heading").offset({ top: bottomOffset });
-                    if (bottomOffset > 0) {
-                        bottomOffset--;
+                for (i = 0; i < array1.length; i++) {
+                    if (array1[i] != array2[i]) {
+                        return false;
                     } else {
-                        leftOffset = 0;
-                        topOffset = 0;
-                        rightOffset = 200;
-                        bottomOffset = 200;
-                    }
+                        return true;
+                    }   
                 }
             }
-        }
+        }; 
+        */ 
+       function pickWord () {
+            var words = [
+                "программа",
+                "макака",
+                "прекрасный",
+                "оладушек",
+                "какашка",
+                "русский"
+                ];
+            return words[Math.floor(Math.random() * words.length)];
+       }
 
-    };
-    var intervalTime = 20;
-    var intervalID = setInterval(moveHeading, intervalTime);
-    var numberOfCliks = 0;
-    var textHeadingWin = function () {
-        $("#heading").text("You win!!!");
-    }
-    var textHeadingChange = function (number) {
-        $("#heading").text("You click me " + number + " times");
-    }
-    $("#heading").click(function () {
-        clearInterval(intervalID);
-        numberOfCliks++;
-        intervalTime *= 0.75;
-        if (intervalTime > 0) {
-            intervalID = setInterval(moveHeading, intervalTime);
-            if (numberOfCliks < 10) {
-                textHeadingChange(numberOfCliks);
-            } else {
-                clearInterval(intervalID);
-                textHeadingWin();
+       function setupAnswerArray (word) {
+            var answerArray = [];
+            for (i = 0; i < word.length; i++) {
+                answerArray[i] = "_";
             }
-        }
-    });
- </script>
+            return answerArray;
+       }
+
+       function showPlayerProgress (answerArray) {
+            return alert(answerArray.join(" "));
+       }
+
+       function getGuess () {
+            return prompt("Input a letter or press Cancel to Close the game.");
+       }
+       
+       function updateGameState (guess, word, answerArray) {
+            var matchLetters = 0;
+            for (var j = 0; j < word.length; j++) {
+                if ((word[j] === guess.toLowerCase()) && (answerArray[j] == "_")){
+                        answerArray[j] = guess.toLowerCase();
+                        matchLetters++;
+                };
+            };
+            return matchLetters;
+       }
+
+       function showAnswerAndCongratulatePlayer (answerArray) {
+           return alert("Congratulations the word was: " + word);
+       }
+
+       var word = pickWord();
+       var answerArray = setupAnswerArray(word);
+       var remainingLetters = word.length;
+       var attempts = 10;
+
+
+       var canvas = document.getElementById("canvas");
+       var ctx = canvas.getContext("2d");
+       var height = canvas.height;
+       var width = canvas.width;
+       ctx.lineWidth = 10;
+       function drawingHangman (number) {
+            if (number == 0) {
+                ctx.strokeRect((width / 2)-(width * 0.05), height * 0.05, width * 0.1, height * 0.1);
+            } else if (number < 2) {
+                ctx.beginPath();
+                ctx.moveTo(width / 2, (height * 0.1)+(height * 0.15));
+                ctx.lineTo((width / 2)-(width * 0.075), ((height * 0.1)+(height * 0.1))-(height * 0.025));
+                ctx.stroke();
+            } else if (number < 4) {
+                ctx.beginPath();
+                ctx.moveTo(width / 2, (height * 0.1)+(height * 0.15));
+                ctx.lineTo((width / 2)+(width * 0.075), ((height * 0.1)+(height * 0.1))-(height * 0.025));
+                ctx.stroke();
+            } else if (number < 6) {
+                ctx.beginPath();
+                ctx.moveTo(width / 2, (height * 0.3)+(height * 0.05));
+                ctx.lineTo((width / 2)-(width * 0.1), (height * 0.3)+(height * 0.175));
+                ctx.stroke();
+            } else if (number < 8) {
+                ctx.beginPath();
+                ctx.moveTo(width / 2, (height * 0.3)+(height * 0.05));
+                ctx.lineTo((width / 2)+(width * 0.1), (height * 0.3)+(height * 0.175));
+                ctx.stroke();
+            } else if (number < 10) {
+                ctx.beginPath();
+                ctx.moveTo(width / 2, (height * 0.1)+(height * 0.05));
+                ctx.lineTo(width / 2, (height * 0.3)+(height * 0.05));
+                ctx.stroke();
+            }
+       };
+       
+       var drawLines = function (wordLength) {
+            ctx.strokeRect(0, 0, width, height);
+            for (i = 1; i <= wordLength; i++) {
+                ctx.fillRect(i * 40, height-20, 32, 10);
+            }
+       }
+
+       var drawText = function () {
+           ctx.fillStyle = "Black";
+           ctx.font = "60px Courier"
+           ctx.textAlign = "left";
+           ctx.textBaseline = "bottom";
+            for (j = 0; j < answerArray.length; j++) {
+                if (answerArray[j] === "_") {
+                    ctx.fillText(" ", (j+1) * 40, height - 20);
+                } else {
+                    ctx.fillText(answerArray[j].toUpperCase(), (j+1) * 40, height - 20);
+                }
+            }
+                
+       };
+       var wrongLetters = 0;
+       var drawingWrongLetters = function (guess) {
+           wrongLetters++;
+           ctx.fillStyle = "Black";
+           ctx.font = "40px Courier"
+           ctx.textAlign = "left";
+           ctx.textBaseline = "middle";
+           ctx.fillText(guess.toUpperCase(), width - 40, wrongLetters * 40);
+           ctx.fillStyle = "Red";
+           ctx.fillRect(width - 40, (wrongLetters * 40) - 2, 25, 4);
+       }
+
+       var inputLetters = [];
+       var repeatLetters = 0;
+       var findrepeatLetters = function (guess) {
+            for (i = 0; i < inputLetters.length; i++) {
+                if (inputLetters[i] === guess) {
+                    repeatLetters++;
+                };
+            };
+            if (repeatLetters !== 0) {
+                return true;
+            } else {
+                return false;
+            };
+       };
+
+       var hangman = function (key) {
+            if (key == 38) {
+                    if ((remainingLetters > 0) && (attempts > 0)) {
+                            drawLines(word.length);
+                            showPlayerProgress(answerArray);
+                            var guess = getGuess();
+                            if (guess === null) {
+                                alert("You dont put anything!");
+                            } else if (guess.length !== 1) {
+                                alert("Plese input just 1 letter!"); 
+                            } else {
+                                
+                                if (findrepeatLetters(guess.toLowerCase())) {
+                                    alert("You already input this letter! Try another letter.");
+                                    repeatLetters = 0;
+                                } else {
+                                    inputLetters.push(guess.toLowerCase());
+                                
+                                    var correctGuesses = updateGameState(guess, word, answerArray);
+            
+                                    if (correctGuesses == 0) {
+                                        attempts--;
+                                        drawingHangman(attempts);
+                                        drawingWrongLetters(guess);
+                                    } else {
+                                        alert("Correct guesses: " + correctGuesses);
+                                        remainingLetters -= correctGuesses;
+                                    };
+                                    drawText();
+                                    alert("Attempts: " + attempts);
+
+                                    if (remainingLetters == 0) {
+                                        showAnswerAndCongratulatePlayer(answerArray);
+                                    } else if ((attempts == 0) || (guess == null)){
+                                        alert("You lose the game! The word was: " + word)
+                                    };
+                                }; 
+                            };
+                };
+            };
+       };
+
+       setInterval(function() {
+            $("#heading").fadeTo(1000, 0);
+            $("#heading").fadeTo(1000, 1);
+       }, 2000);
+
+       $("body").keydown(function (event) {
+            hangman(event.keyCode);
+        });
+    </script>
 </body>
 </html>
